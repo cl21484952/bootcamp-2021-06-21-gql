@@ -141,7 +141,7 @@ const resolvers = {
 
       const dbRes = await ctx.dynamoDB
         .get({
-          TableName: TWEET_TABLENAME,
+          TableName: AUTHOR_TABLENAME,
           Key: {
             authorID: args.authorID,
           },
