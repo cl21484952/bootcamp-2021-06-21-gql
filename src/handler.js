@@ -109,7 +109,7 @@ const resolvers = {
       return results.Items;
     },
     tweetView: async (src, args, ctx) => {
-      const dbRes = ctx.dynamoDB
+      const dbRes = await ctx.dynamoDB
         .get({
           TableName: TWEET_TABLENAME,
           Key: {
@@ -143,13 +143,13 @@ const resolvers = {
         .get({
           TableName: AUTHOR_TABLENAME,
           Key: {
-            authorID: args.authorID,
+            authorID: data.authorID,
           },
         })
         .promise();
       const dbAuthor = dbRes.Item;
 
-      if (dbAuthor) {
+      if (!dbAuthor) {
         return null;
       }
 
@@ -199,17 +199,17 @@ const resolvers = {
         .get({
           TableName: TWEET_TABLENAME,
           Key: {
-            authorID: args.authorID,
+            tweetID: data.tweetID,
           },
         })
         .promise();
       const dbTweet = dbRes.Item;
 
-      if (dbTweet) {
+      if (!dbTweet) {
         return null;
       }
 
-      dbTweet.name = data.name;
+      dbTweet.text = data.text;
       await dynamoDB
         .put({
           TableName: TWEET_TABLENAME,
