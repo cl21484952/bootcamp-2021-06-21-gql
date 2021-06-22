@@ -1,0 +1,64 @@
+service: boot-camp-gql
+frameworkVersion: "2"
+
+provider:
+  name: aws
+  stage: boot-camp
+  region: ap-southeast-1
+  runtime: nodejs14.x
+  apiGateway:
+    minimumCompressionSize: 1024
+    shouldStartNameWithService: true
+  environment:
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/Bootcamp*"
+functions:
+  graphql:
+    handler: src/handler.graphql
+    events:
+      - http:
+          path: graphql
+          method: get
+      - http:
+          path: graphql
+          method: post
+resources:
+  Resources:
+    BootcampAuthorCollection:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: authorID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: authorID
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: "5"
+          WriteCapacityUnits: "5"
+        TableName: BootcampAuthorCollection
+    BootcampTweetCollection:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: tweetID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tweetID
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: "5"
+          WriteCapacityUnits: "5"
+        TableName: BootcampTweetCollection
